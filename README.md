@@ -1,6 +1,6 @@
-# 🎯 Job Alert System for H1B Candidates
+# 🎯 Job Alert System for jobseekers looking to be an early applicant for companies they want to work for
 
-**Automated job monitoring system that alerts you within 1 hour of new postings at top H1B-sponsoring companies in the Bay Area.**
+**Automated job monitoring system that alerts you within 1 hour of new postings at top companies in the Bay Area.**
 
 > **The ATS Hack:** Companies review applications in the order received. Being in the first 10 applicants vs the first 100 can increase your odds by 10x. This system gets you there.
 
