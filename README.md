@@ -20,7 +20,7 @@
 - ✅ **IP-safe scraping** - delays, user agent rotation, retry logic
 - ✅ **Database tracking** - full job history and analytics
 
-**Coverage:** These 150 companies represent **77.4%** of all Bay Area H1B visa approvals (18,120 approvals in FY2025).
+
 
 ---
 
