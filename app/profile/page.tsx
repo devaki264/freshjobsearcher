@@ -1,19 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function ProfilePage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [resumeText, setResumeText] = useState('')
   const [skills, setSkills] = useState<string[]>([])
   const [newSkill, setNewSkill] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('entry')
   const [embedding, setEmbedding] = useState<number[]>([])
-  const [step, setStep] = useState(1) // 1=upload, 2=review, 3=saved
+  const [step, setStep] = useState(1)
+  const [hasExistingProfile, setHasExistingProfile] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    loadExistingProfile()
+  }, [])
+
+  const loadExistingProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+
+      // Get most recent profile
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+
+      if (profiles && profiles.length > 0) {
+        const profileData = profiles[0]
+        setResumeText(profileData.resume_text || '')
+        setSkills(profileData.skills || [])
+        setExperienceLevel(profileData.experience_level || 'entry')
+        setEmbedding(profileData.resume_embedding || [])
+        setHasExistingProfile(true)
+        setStep(2)
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error)
+    }
+    setLoading(false)
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -29,7 +66,6 @@ export default function ProfilePage() {
     formData.append('resume', file)
 
     try {
-      // Get auth token
       const { data: { session } } = await supabase.auth.getSession()
 
       const res = await fetch('/api/profile', {
@@ -46,7 +82,7 @@ export default function ProfilePage() {
         setResumeText(data.resumeText)
         setSkills(data.skills)
         setEmbedding(data.embedding)
-        setStep(2) // Move to review step
+        setStep(2)
       } else {
         alert(`Error: ${data.error}`)
       }
@@ -72,7 +108,6 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Save to database
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -86,11 +121,19 @@ export default function ProfilePage() {
 
       if (error) throw error
 
-      setStep(3) // Success
+      setStep(3)
       setTimeout(() => router.push('/dashboard'), 2000)
     } catch (error) {
       alert('Failed to save profile')
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -98,14 +141,21 @@ export default function ProfilePage() {
       <nav className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-gray-900">Setup Your Profile</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              {hasExistingProfile ? 'Edit Your Profile' : 'Setup Your Profile'}
+            </h1>
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Back to Dashboard
+            </button>
           </div>
         </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Step 1: Upload Resume */}
         {step === 1 && (
           <div className="bg-white rounded-lg shadow p-8">
             <h2 className="text-2xl font-bold mb-4">Upload Your Resume</h2>
@@ -151,17 +201,21 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Step 2: Review & Edit Skills */}
         {step === 2 && (
           <div className="bg-white rounded-lg shadow p-8">
-            <h2 className="text-2xl font-bold mb-4">Review Your Skills</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {hasExistingProfile ? 'Edit Your Skills' : 'Review Your Skills'}
+            </h2>
             <p className="text-gray-600 mb-6">
-              AI found {skills.length} skills. Remove any that don't apply, or add ones we missed.
+              {hasExistingProfile 
+                ? `You have ${skills.length} skills. Add more or remove any that don't apply.`
+                : `AI found ${skills.length} skills. Remove any that don't apply, or add ones we missed.`
+              }
             </p>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Extracted Skills
+                Your Skills
               </label>
               <div className="flex flex-wrap gap-2 mb-4 p-4 bg-gray-50 rounded-lg min-h-[100px]">
                 {skills.map((skill, index) => (
@@ -172,7 +226,7 @@ export default function ProfilePage() {
                     {skill}
                     <button
                       onClick={() => removeSkill(skill)}
-                      className="ml-2 text-blue-600 hover:text-blue-800"
+                      className="ml-2 text-blue-600 hover:text-blue-800 font-bold"
                     >
                       ×
                     </button>
@@ -191,7 +245,7 @@ export default function ProfilePage() {
                 />
                 <button
                   onClick={addSkill}
-                  className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                  className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
                 >
                   Add
                 </button>
@@ -214,15 +268,17 @@ export default function ProfilePage() {
             </div>
 
             <div className="flex gap-4">
-              <button
-                onClick={() => setStep(1)}
-                className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-              >
-                Back
-              </button>
+              {!hasExistingProfile && (
+                <button
+                  onClick={() => setStep(1)}
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
+                >
+                  Back
+                </button>
+              )}
               <button
                 onClick={saveProfile}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className={`${hasExistingProfile ? 'w-full' : 'flex-1'} px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium`}
               >
                 Save Profile
               </button>
@@ -230,7 +286,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Step 3: Success */}
         {step === 3 && (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
