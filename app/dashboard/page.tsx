@@ -63,9 +63,17 @@ export default function DashboardPage() {
           </p>
           
           <div className="border-t pt-4 mt-4">
-            <p className="text-gray-500 text-sm">
-              🚧 Profile upload, company selection, and job matching coming next!
-            </p>
+            <div className="space-y-4">
+              <button
+                onClick={() => router.push('/profile')}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Setup Your Profile
+              </button>
+              <p className="text-gray-500 text-sm">
+                Upload your resume and we will extract your skills using AI
+              </p>
+            </div>
           </div>
         </div>
       </div>
