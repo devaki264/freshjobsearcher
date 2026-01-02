@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
+  const [companies, setCompanies] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -35,6 +36,23 @@ export default function DashboardPage() {
     if (profiles && profiles.length > 0) {
       setProfile(profiles[0])
     }
+
+    // Get user's selected companies
+    const { data: subsData } = await supabase
+      .from('subscriptions')
+      .select(`
+        company_id,
+        companies (
+          id,
+          name,
+          h1b_verified
+        )
+      `)
+      .eq('user_id', user.id)
+      .eq('active', true)
+
+    const selectedCompanies = subsData?.map((sub: any) => sub.companies).filter(Boolean) || []
+    setCompanies(selectedCompanies)
     
     setLoading(false)
   }
@@ -122,11 +140,62 @@ export default function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="border-t pt-4">
-                  <p className="text-gray-500 text-sm">
-                    🚧 Coming next: Select companies to monitor and start receiving job alerts!
-                  </p>
+                {/* Companies Section */}
+                <div className="border-t pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Monitored Companies</h3>
+                    <button
+                      onClick={() => router.push('/companies')}
+                      className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                    >
+                      {companies.length > 0 ? 'Edit Companies' : 'Select Companies'}
+                    </button>
+                  </div>
+
+                  {companies.length > 0 ? (
+                    <>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Monitoring {companies.length} companies for new job postings
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {companies.map((company: any) => (
+                          <span
+                            key={company.id}
+                            className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full"
+                          >
+                            {company.name}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                        <p className="text-sm text-green-800">
+                          ✅ You'll receive alerts when jobs matching your skills are posted at these companies.
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-yellow-800">
+                        ⚠️ No companies selected yet. Choose companies to start receiving job alerts!
+                      </p>
+                      <button
+                        onClick={() => router.push('/companies')}
+                        className="mt-3 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-sm"
+                      >
+                        Select Companies Now
+                      </button>
+                    </div>
+                  )}
                 </div>
+
+                {/* Next Steps */}
+                {companies.length > 0 && (
+                  <div className="border-t pt-4">
+                    <p className="text-gray-500 text-sm">
+                      🚧 Coming soon: View matched jobs and AI-powered recommendations!
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               // No profile - show setup button
