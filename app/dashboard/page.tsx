@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -156,6 +157,29 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
+                {/* Matched Jobs Section - NEW */}
+                <div className="border-t border-gray-700 pt-8">
+                  <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-2">🎯 Your Matched Jobs</h3>
+                        <p className="text-gray-400">
+                          AI-powered job matches based on your resume and preferences
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-4">
+                      <Link 
+                        href="/matches"
+                        className="flex-1 px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all font-semibold text-center shadow-lg hover:shadow-xl text-white"
+                      >
+                        View All Matches →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Companies Section */}
                 <div className="border-t border-gray-700 pt-8">
                   <div className="flex items-center justify-between mb-6">
@@ -217,15 +241,6 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-
-                {/* Next Steps */}
-                {companies.length > 0 && (
-                  <div className="border-t border-gray-700 pt-6">
-                    <p className="text-gray-400 text-sm font-medium">
-                      🚧 Coming soon: View matched jobs and AI-powered recommendations!
-                    </p>
-                  </div>
-                )}
               </>
             ) : (
               // No profile - show setup button
