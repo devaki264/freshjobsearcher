@@ -1,6 +1,3 @@
-# .dockerignore
-# Don't copy these to Docker image
-
 node_modules
 .next
 .git

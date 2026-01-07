@@ -98,7 +98,7 @@ export async function findSimpleMatches(userId: string): Promise<SimpleMatch[]> 
 
       matches.push({
         job_id: job.id,
-        company_name: job.company?.name || 'Unknown',
+        company_name: (job.company as any)?.name || 'Unknown',
         title: job.title,
         description: job.description || '',
         requirements: jobRequirements,

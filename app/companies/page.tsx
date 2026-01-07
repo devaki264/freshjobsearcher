@@ -54,9 +54,8 @@ export default function CompaniesPage() {
 
     setCuratedCompanies(companiesData || [])
     setCustomCompanies(customData || [])
-    setNotificationLevel(profiles?.[0]?.notification_level || 'skill_match')
-    
-    const selected = new Set(subsData?.map(s => s.company_id) || [])
+    setNotificationLevel((profiles?.[0] as any)?.notification_level || 'skill_match')    
+    const selected = new Set(subsData?.map((s: any) => s.company_id) || [])
     setSelectedCompanies(selected)
     
     setLoading(false)
@@ -90,6 +89,7 @@ export default function CompaniesPage() {
 
     const { data, error } = await supabase
       .from('custom_companies')
+      // @ts-ignore
       .insert({
         user_id: user.id,
         name: customName.trim(),
@@ -116,6 +116,7 @@ export default function CompaniesPage() {
   async function removeCustomCompany(companyId: string) {
     const { error } = await supabase
       .from('custom_companies')
+      // @ts-ignore
       .update({ active: false })
       .eq('id', companyId)
 
@@ -136,6 +137,7 @@ export default function CompaniesPage() {
 
       await supabase
         .from('profiles')
+        // @ts-ignore
         .update({ 
           notification_level: notificationLevel,
           updated_at: new Date().toISOString()
@@ -156,6 +158,7 @@ export default function CompaniesPage() {
       if (subscriptions.length > 0) {
         const { error } = await supabase
           .from('subscriptions')
+          // @ts-ignore
           .insert(subscriptions)
 
         if (error) throw error
@@ -281,7 +284,7 @@ export default function CompaniesPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         
-        {/* Curated Companies Section - FIRST */}
+        {/* Curated Companies Section */}
         <div className="bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 p-8">
           <div className="mb-6">
             <h2 className="text-3xl font-extrabold text-white mb-3">
@@ -351,7 +354,7 @@ export default function CompaniesPage() {
           </div>
         </div>
 
-        {/* Custom Companies Section - SECOND */}
+        {/* Custom Companies Section */}
         <div className="bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 p-8">
           <div className="mb-6">
             <h2 className="text-3xl font-extrabold text-white mb-3">
@@ -431,7 +434,7 @@ export default function CompaniesPage() {
           )}
         </div>
 
-        {/* Notification Level Section - THIRD */}
+        {/* Notification Level Section */}
         <div className="bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 p-8">
           <div className="mb-8">
             <h2 className="text-3xl font-extrabold text-white mb-3">
@@ -450,7 +453,7 @@ export default function CompaniesPage() {
                   key={option.id}
                   className={`relative p-8 rounded-2xl cursor-pointer transition-all duration-300 ${
                     isSelected
-                      ? `bg-gradient-to-br ${option.bgGradient} border-2 ${option.borderColor} shadow-2xl shadow-${option.id === 'all_jobs' ? 'yellow' : option.id === 'experience_match' ? 'blue' : 'purple'}-500/50 scale-105`
+                      ? `bg-gradient-to-br ${option.bgGradient} border-2 ${option.borderColor} shadow-2xl scale-105`
                       : 'bg-gray-900/50 border-2 border-gray-700 hover:border-gray-600 hover:shadow-lg'
                   }`}
                 >

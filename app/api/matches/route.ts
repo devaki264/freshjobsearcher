@@ -5,23 +5,28 @@ import { findSimpleMatches } from '@/lib/simple-matching';
 export async function GET() {
   try {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Not authenticated' 
+      }, { status: 401 });
     }
 
     const matches = await findSimpleMatches(user.id);
-
+    
     return NextResponse.json({
       success: true,
-      matches,
-      count: matches.length
+      matches
     });
-  } catch (error) {
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 }
-    );
+    
+  } catch (error: any) {
+    console.error('Error in matches API:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message || 'Failed to get matches' 
+    }, { status: 500 });
   }
 }

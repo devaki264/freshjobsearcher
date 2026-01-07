@@ -24,14 +24,14 @@ export default function MatchesPage() {
   useEffect(() => {
     fetch('/api/matches')
       .then(res => res.json())
-      .then(data => {
+      .then((data: any) => {
         if (data.success) {
-          setMatches(data.matches);
+          setMatches(data.matches as Match[]);
         } else {
           setError(data.error);
         }
       })
-      .catch(err => setError(err.message))
+      .catch((err: any) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -143,7 +143,7 @@ export default function MatchesPage() {
               </div>
 
               {/* Apply Button */}
-              
+              <a
                 href={match.url}
                 target="_blank"
                 rel="noopener noreferrer"
