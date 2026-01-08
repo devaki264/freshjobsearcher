@@ -1,42 +1,26 @@
-# Dockerfile for Next.js on Google Cloud Run
-
-# Stage 1: Build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
 COPY . .
-
-# Build Next.js app
 RUN npm run build
 
-# Stage 2: Production
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Set to production
 ENV NODE_ENV=production
 
-# Copy necessary files from builder
-COPY --from=builder /app/next.config.ts ./
+# Copy standalone build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
 
-# Expose port (Cloud Run uses PORT env var)
 EXPOSE 8080
-
-# Set PORT env var for Next.js
 ENV PORT=8080
 
-# Start Next.js
-CMD ["npm", "start"]
+# Use the correct start command for standalone builds
+CMD ["node", "server.js"]
