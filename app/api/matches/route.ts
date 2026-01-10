@@ -4,7 +4,7 @@ import { findSimpleMatches } from '@/lib/simple-matching';
 
 export async function GET() {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     

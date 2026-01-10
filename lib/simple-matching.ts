@@ -18,7 +18,7 @@ export interface SimpleMatch {
  * This is intentionally loose to avoid false negatives
  */
 export async function findSimpleMatches(userId: string): Promise<SimpleMatch[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // 1. Get user's skills
   const { data: profile } = await supabase

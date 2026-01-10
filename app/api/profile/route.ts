@@ -6,30 +6,52 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient();
+    console.log('📝 POST /api/profile - Starting resume upload');
+    
+    const supabase = await createClient();
     
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
+    // DEBUG LOGGING
+    console.log('🔍 Auth Debug (POST):', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      userError: userError?.message,
+      timestamp: new Date().toISOString()
+    });
+    
     if (userError || !user) {
+      console.error('❌ Auth failed (POST):', userError);
       return NextResponse.json({ 
         success: false, 
         error: 'Not authenticated' 
       }, { status: 401 });
     }
 
+    console.log('✅ User authenticated:', user.email);
+
     const formData = await request.formData();
     const file = formData.get('resume') as File;
     
     if (!file) {
+      console.error('❌ No file provided');
       return NextResponse.json({ 
         success: false, 
         error: 'No file provided' 
       }, { status: 400 });
     }
 
+    console.log('📄 File received:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    });
+
     const arrayBuffer = await file.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString('base64');
 
+    console.log('🤖 Calling Gemini API...');
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
     
     const result = await model.generateContent([
@@ -54,15 +76,23 @@ export async function POST(request: Request) {
       }
     ]);
 
+    console.log('✅ Gemini API response received');
+
     const text = result.response.text();
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
+      console.error('❌ Failed to extract JSON from Gemini response');
       throw new Error('Failed to extract JSON from response');
     }
 
     const extracted = JSON.parse(jsonMatch[0]);
+    console.log('✅ Extracted data:', {
+      skillsCount: extracted.skills?.length,
+      experienceLevel: extracted.experience_level
+    });
 
+    console.log('💾 Updating profile in database...');
     const { error: updateError } = await supabase
       .from('profiles')
       .update({
@@ -75,8 +105,11 @@ export async function POST(request: Request) {
       .eq('user_id', user.id);
 
     if (updateError) {
+      console.error('❌ Database update failed:', updateError);
       throw updateError;
     }
+
+    console.log('✅ Profile updated successfully');
 
     return NextResponse.json({
       success: true,
@@ -87,7 +120,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error: any) {
-    console.error('Error processing resume:', error);
+    console.error('❌ Error processing resume:', error);
     return NextResponse.json({ 
       success: false, 
       error: error.message || 'Failed to process resume' 
@@ -97,16 +130,30 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const supabase = createClient();
+    console.log('📖 GET /api/profile - Fetching profile');
+    
+    const supabase = await createClient();
     
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
+    // DEBUG LOGGING
+    console.log('🔍 Auth Debug (GET):', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      userError: userError?.message,
+      timestamp: new Date().toISOString()
+    });
+    
     if (userError || !user) {
+      console.error('❌ Auth failed (GET):', userError);
       return NextResponse.json({ 
         success: false, 
         error: 'Not authenticated' 
       }, { status: 401 });
     }
+
+    console.log('✅ User authenticated:', user.email);
 
     const { data, error } = await supabase
       .from('profiles')
@@ -115,8 +162,14 @@ export async function GET() {
       .single();
 
     if (error) {
+      console.error('❌ Database query failed:', error);
       throw error;
     }
+
+    console.log('✅ Profile fetched:', {
+      hasResume: !!data?.resume_text,
+      skillsCount: data?.skills?.length
+    });
 
     return NextResponse.json({
       success: true,
@@ -124,7 +177,7 @@ export async function GET() {
     });
 
   } catch (error: any) {
-    console.error('Error getting profile:', error);
+    console.error('❌ Error getting profile:', error);
     return NextResponse.json({ 
       success: false, 
       error: error.message || 'Failed to get profile' 
