@@ -52,8 +52,7 @@ export async function POST(request: Request) {
     const base64 = Buffer.from(arrayBuffer).toString('base64');
 
     console.log('🤖 Calling Gemini API...');
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });    
     const result = await model.generateContent([
       {
         inlineData: {
@@ -66,13 +65,11 @@ export async function POST(request: Request) {
         {
           "resume_text": "full text content",
           "skills": ["skill1", "skill2", ...],
-          "experience_level": "entry|mid|senior",
-          "resume_embedding": [array of numbers for semantic search]
+          "experience_level": "entry|mid|senior"
         }
         
         For skills: extract ALL technical skills, tools, languages, frameworks.
-        For experience_level: determine based on years of experience.
-        For resume_embedding: generate a 768-dimensional embedding vector.`
+        For experience_level: determine based on years of experience (entry/mid/senior).`
       }
     ]);
 
@@ -99,7 +96,6 @@ export async function POST(request: Request) {
         resume_text: extracted.resume_text,
         skills: extracted.skills,
         experience_level: extracted.experience_level,
-        resume_embedding: extracted.resume_embedding,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', user.id);
@@ -157,7 +153,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('resume_text, skills, experience_level, resume_embedding')
+      .select('resume_text, skills, experience_level')
       .eq('user_id', user.id)
       .single();
 

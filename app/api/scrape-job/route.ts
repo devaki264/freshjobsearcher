@@ -32,8 +32,7 @@ export async function POST(request: Request) {
     const html = await response.text();
 
     // Use Gemini to extract job details
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });    
     const result = await model.generateContent([
       {
         text: `Extract job details from this HTML in JSON format:
