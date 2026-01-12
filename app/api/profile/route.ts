@@ -89,23 +89,25 @@ export async function POST(request: Request) {
       experienceLevel: extracted.experience_level
     });
 
-    console.log('💾 Updating profile in database...');
-    const { error: updateError } = await supabase
+    console.log('💾 Upserting profile in database...');
+    const { error: upsertError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        user_id: user.id,
         resume_text: extracted.resume_text,
         skills: extracted.skills,
         experience_level: extracted.experience_level,
         updated_at: new Date().toISOString()
-      })
-      .eq('user_id', user.id);
+      }, {
+        onConflict: 'user_id'
+      });
 
-    if (updateError) {
-      console.error('❌ Database update failed:', updateError);
-      throw updateError;
+    if (upsertError) {
+      console.error('❌ Database upsert failed:', upsertError);
+      throw upsertError;
     }
 
-    console.log('✅ Profile updated successfully');
+    console.log('✅ Profile upserted successfully');
 
     return NextResponse.json({
       success: true,
