@@ -5,7 +5,6 @@ An intelligent job matching platform specifically designed for international tal
 ## 🎯 Problem Statement
 
 International students and workers waste countless hours applying to jobs at companies that don't sponsor H1B visas. This platform solves that by:
-- Curating only **verified H1B sponsors**
 - Using **AI semantic matching** to surface relevant opportunities
 - Providing **customizable notification levels** (quality vs quantity)
 
