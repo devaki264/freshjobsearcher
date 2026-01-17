@@ -13,7 +13,6 @@ New college graduates struggle to become early applicants at companies they want
 ### Completed
 - ✅ **AI Resume Parsing**: Upload PDF resume → Gemini 2.0 Flash extracts skills automatically
 - ✅ **Smart Profile Management**: Edit skills, set experience level, vector embeddings for matching
-- ✅ **Verified H1B Companies**: Pre-vetted list of 20+ companies (Intel, Micron, Google, Microsoft, etc.)
 - ✅ **Custom Company Addition**: Add any company's career page you want to monitor
 - ✅ **Notification Preferences**: 
   - **All Jobs** (~40/week): Cast a wide net
