@@ -30,7 +30,7 @@ New college graduates struggle to become early applicants at companies they want
 - **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Supabase (PostgreSQL + pgvector)
 - **AI/ML**: Google Gemini 2.0 Flash (resume parsing), Vector embeddings (768-dim)
-- **Database**: PostgreSQL with pgvector extension for semantic search
+- **Database**: PostgreSQL with pgvector extension for semantic searching
 - **Auth**: Supabase Auth
 
 ## 🚀 Getting Started
