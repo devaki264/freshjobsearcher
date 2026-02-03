@@ -1,6 +1,6 @@
 # AI Job Match Agent
 
-An intelligent job matching platform specifically designed for talent seeking jobs that hire them. Uses AI-powered resume parsing and semantic matching to connect job seekers with verified H1B-sponsoring companies.
+An intelligent job matching platform specifically designed for talent seeking jobs freshly posted in their careers website. Uses AI-powered resume parsing and semantic matching to connect job seekers with companies.
 
 Link to the live website: https://ai-job-match-agent-686566480080.us-central1.run.app/auth/login
 
