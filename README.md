@@ -124,4 +124,4 @@ MIT License - feel free to use this for learning purposes.
 
 ---
 
-Built with ❤️ for international job seekers navigating the H1B process.
+Built with ❤️ for job seekers in the United States
