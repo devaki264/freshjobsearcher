@@ -59,7 +59,7 @@ export default function LoginPage() {
               AI Job Match Agent
             </h1>
             <p className="text-gray-600">
-              Get personalized H1B job alerts
+              Get instant personalized job alerts to be an early applicant
             </p>
           </div>
 
