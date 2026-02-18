@@ -69,7 +69,7 @@ export default function LoginPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
+        emailRedirectTo: 'https://ai-job-match-agent-686566480080.us-central1.run.app/auth/callback'
       }
     })
 
