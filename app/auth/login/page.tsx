@@ -46,7 +46,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: 'https://ai-job-match-agent-686566480080.us-central1.run.app/auth/callback',
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
