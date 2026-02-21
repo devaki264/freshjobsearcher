@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AI Job Match Agent",
-  description: "AI-powered job matching for H1B visa seekers",
+  description: "AI-powered job matching to become an early applicant",
+  verification: {
+    google: "FoOppvGN9xLv60nYZOyJr50x0QqbQTtnl_ahGbyoJzs",
+  },
 };
 
 export default function RootLayout({
