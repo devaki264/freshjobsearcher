@@ -89,3 +89,6 @@ The monitoring system is built around **control**:
 ```bash
 git clone https://github.com/devaki264/ai-job-match-agent.git
 cd ai-job-match-agent
+
+2. **Install dependencies**
+npm install
